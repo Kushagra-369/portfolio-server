@@ -1,46 +1,19 @@
-const mongoose = require("mongoose");
+import mongoose, { Schema } from "mongoose";
+import { IPortfolio } from "../interface/all_interface";
 
-// Sub-schema for individual projects
-const projectSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-  description: {
-    type: String,
-    required: true,
-  },
-  tools: [
-    {
-      type: String,
-      required: true,
-    },
-  ],
-  githubLink: {
-    type: String,
-    required: true,
-  },
-  deploymentLink: {
-    type: String,
-  },
-});
 
-// Main schema for portfolio categories
-const portfolioSchema = new mongoose.Schema(
+const portfolioSchema = new Schema<IPortfolio>(
   {
-    category: {
-      type: String,
-      enum: ["Frontend", "Full Stack"], // only these two allowed
-      required: true,
-    },
-    profilePhoto: {
-      type: String, // Store image URL (e.g. from Cloudinary, S3, etc.)
-      required: false,
-    },
-    projects: [projectSchema], // array of project objects
+    profilePhoto: { type: Object, required: false, trim: true },
+    name: { type: String, required: true },
+    description: { type: String, required: true },
+    tools: [{ type: String, required: true }],
+    githubLink: { type: String, required: true },
+    deploymentLink: { type: String },
+    category: { type: String, enum: ["Frontend", "Full Stack"], required: true },
   },
-  { timestamps: true } // adds createdAt and updatedAt
+  { timestamps: true }
 );
 
-// Model export
-module.exports = mongoose.model("Portfolio", portfolioSchema);
+const Portfolio = mongoose.model<IPortfolio>("Portfolio", portfolioSchema);
+export default Portfolio;
