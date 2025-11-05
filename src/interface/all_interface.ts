@@ -6,6 +6,7 @@ export interface IPortfolio extends Document {
   tools: string[];
   githubLink: string;
   deploymentLink: string;
+  socialLinks: Object[];
   category: "Frontend" | "Full Stack";
   profilePhoto: Object;
 }

@@ -11,6 +11,7 @@ const portfolioSchema = new Schema<IPortfolio>(
     tools: [{ type: String, required: true }],
     githubLink: { type: String, required: true },
     deploymentLink: { type: String },
+    socialLinks: [{ type: Object, required: true }],
     category: { type: String, enum: ["Frontend", "Full Stack"], required: true },
   },
   { timestamps: true }
