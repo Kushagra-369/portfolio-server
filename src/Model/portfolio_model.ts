@@ -1,11 +1,12 @@
 import mongoose, { Schema } from "mongoose";
 import { IPortfolio } from "../interface/all_interface";
+import { ValidName } from '../validation/AllValidation'
 
 
 const portfolioSchema = new Schema<IPortfolio>(
   {
     profilePhoto: { type: Object, required: false, trim: true },
-    name: { type: String, required: true },
+    name: { type: String, validate: [ValidName, "Invalid name"], required: true, unique: true },
     description: { type: String, required: true },
     tools: [{ type: String, required: true }],
     githubLink: { type: String, required: true },
