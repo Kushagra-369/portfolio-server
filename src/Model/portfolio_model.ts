@@ -13,6 +13,7 @@ const portfolioSchema = new Schema<IPortfolio>(
     deploymentLink: { type: String },
     socialLinks: [{ type: Object, required: true }],
     category: { type: String, enum: ["Frontend", "Full Stack"], required: true },
+    isDeleted: { type: Boolean, default: false }
   },
   { timestamps: true }
 );

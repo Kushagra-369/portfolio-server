@@ -9,4 +9,5 @@ export interface IPortfolio extends Document {
   socialLinks: Object[];
   category: "Frontend" | "Full Stack";
   profilePhoto: Object;
+  isDeleted: boolean;
 }

@@ -27,19 +27,43 @@ export const get_all_project = async (req: Request, res: Response): Promise<void
 export const delete_project = async (req: Request, res: Response): Promise<void> => {  
   try {
     const { id } = req.params;
+
     const project = await Portfolio.findById(id);
     if (!project) {
       res.status(404).send({ status: "fail", message: "Project not found." });
       return;
     }
-    await Portfolio.findByIdAndDelete(id);
-    res.status(200).send({ status: "success", message: "Project deleted successfully." });
-  } catch (error: any) {
+
+    project.isDeleted = true;
+    await project.save();
+
+    res.status(200).send({ status: "success", message: "Project soft-deleted successfully." });
+  } 
+  catch (error: any) {
     errorHandling(error, res);
   }
 };
 
+export const update_project = async (req: Request, res: Response): Promise<void> => {  
+  try {
+    const { id } = req.params;
+    const data = req.body;
 
+    const project = await Portfolio.findById(id);
+    if (!project) {
+      res.status(404).send({ status: "fail", message: "Project not found." });
+      return;
+    }
+
+    // Update project details
+    Object.assign(project, data);
+    await project.save();
+
+    res.status(200).send({ status: "success", message: "Project updated successfully.", data: project });
+  } catch (error: any) {
+    errorHandling(error, res);
+  }
+};
 
 // get api  // filter delete product , active product 
 // delete project
