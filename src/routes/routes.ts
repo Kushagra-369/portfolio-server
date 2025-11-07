@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import multer = require("multer")
 import { create_project, get_all_project, delete_project, update_project, update_project_img } from '../controller/portfolio_controller'
-
+import { create_user} from '../controller/user_controller'
 const router = Router()
 
 const upload = multer({ storage: multer.diskStorage({}) })
@@ -11,6 +11,7 @@ router.get('/get_all_project', get_all_project)
 router.delete('/delete_project/:id', delete_project)
 router.put('/update_project/:id', update_project)
 router.put('/update_project_img/:id', upload.single('profilePhoto'), update_project_img)
+router.post('/create_user', create_user)
 
 
 export default router

@@ -13,7 +13,6 @@ export interface IPortfolio extends Document {
   file?: Express.Multer.File;
 }
 
-
 export interface IUser extends Document {
   name: string;
   email: string;
