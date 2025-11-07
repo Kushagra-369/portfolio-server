@@ -2,18 +2,30 @@ import { Request, Response } from "express";
 import Portfolio from "../Model/portfolio_model";
 import { IPortfolio } from "../interface/all_interface";
 import { errorHandling } from "../error/errorhandling";
+import { upload_project_img } from '../img/upload'
 
-export const create_project = async (req: Request<{}, {}, IPortfolio>,res: Response): Promise<void> => {
+
+
+export const create_project = async (req: Request, res: Response): Promise<void> => {
   try {
-    const data = req.body;
-    // upload image check db product is not present then upload img
+    let data: any = req.body;
+    const img = req.file;
+
+    if (!img) { res.status(400).send({ status: false, message: "Image is required." }); return }
+    if (typeof data.tools === "string") data.tools = JSON.parse(data.tools)
+    if (typeof data.socialLinks === "string") data.socialLinks = JSON.parse(data.socialLinks)
+
+    data.profilePhoto = await upload_project_img(img.path)
+
     const newPortfolio = await Portfolio.create(data);
-    res.status(201).send({status: "success", data: newPortfolio});
-  } 
-  catch (error: any) {errorHandling(error,res);}
+    res.status(201).json({ status: "success", data: newPortfolio });
+  } catch (error: any) {
+    errorHandling(error, res);
+  }
 };
 
-export const get_all_project = async (req: Request, res: Response): Promise<void> => {  
+
+export const get_all_project = async (req: Request, res: Response): Promise<void> => {
   try {
     const projects = await Portfolio.find();
     res.status(200).send({ status: "success", data: projects });
@@ -24,27 +36,34 @@ export const get_all_project = async (req: Request, res: Response): Promise<void
 
 
 
-export const delete_project = async (req: Request, res: Response): Promise<void> => {  
+export const delete_project = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { id } = req.params;
+    let { isDeleted, product_id } = req.query;
 
-    const project = await Portfolio.findById(id);
-    if (!project) {
-      res.status(404).send({ status: "fail", message: "Project not found." });
-      return;
+
+
+    if (typeof isDeleted === "string") {
+      try { isDeleted = JSON.parse(isDeleted) }
+      catch { res.status(400).send({ status: false, message: 'Invalid type isDeleted' }); return } 
+    } 
+
+    const project = await Portfolio.findById(product_id);
+    if (!project) { res.status(404).send({ status: "fail", message: "Project not found." }); return; }
+
+    if (isDeleted) {
+      project.isDeleted = true; await project.save();
+      res.status(200).send({ status: "success", message: "Project soft-deleted successfully." });
+      return
     }
-
-    project.isDeleted = true;
-    await project.save();
-
-    res.status(200).send({ status: "success", message: "Project soft-deleted successfully." });
-  } 
-  catch (error: any) {
-    errorHandling(error, res);
+    else {
+      project.isDeleted = false; await project.save();
+      res.status(200).send({ status: "success", message: "Project restored successfully." });
+    }
   }
+  catch (error: any) { errorHandling(error, res); }
 };
 
-export const update_project = async (req: Request, res: Response): Promise<void> => {  
+export const update_project = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
     const data = req.body;
@@ -65,7 +84,7 @@ export const update_project = async (req: Request, res: Response): Promise<void>
   }
 };
 
-// get api  // filter delete product , active product 
+// get api  // filter delete product , active product
 // delete project
-// update img only 
+// update img only
 // update data but not updated img

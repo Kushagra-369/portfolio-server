@@ -10,4 +10,5 @@ export interface IPortfolio extends Document {
   category: "Frontend" | "Full Stack";
   profilePhoto: Object;
   isDeleted: boolean;
+  file?: Express.Multer.File;
 }

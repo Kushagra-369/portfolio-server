@@ -1,6 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 import { IPortfolio } from "../interface/all_interface";
 import { ValidName } from '../validation/AllValidation'
+import multer = require("multer");
 
 
 const portfolioSchema = new Schema<IPortfolio>(
