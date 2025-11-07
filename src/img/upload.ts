@@ -29,3 +29,11 @@ export const upload_project_img = async (img:string) => {
 }
 
 
+export const deleteImg = async (publicId:string) => {
+    try {
+        await cloudinary.uploader.destroy(publicId);
+    } catch (error) {
+        console.error('Error deleting image:', error);
+        throw error;
+    }
+}

@@ -6,7 +6,7 @@ import multer = require("multer");
 
 const portfolioSchema = new Schema<IPortfolio>(
   {
-    profilePhoto: { type: Object, required: false, trim: true },
+    profilePhoto: { type: {public_id: String,secure_url: String}, required: false, trim: true },
     name: { type: String, validate: [ValidName, "Invalid name"], required: true, unique: true },
     description: { type: String, required: true },
     tools: [{ type: String, required: true }],

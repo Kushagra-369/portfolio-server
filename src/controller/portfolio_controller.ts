@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import Portfolio from "../Model/portfolio_model";
 import { IPortfolio } from "../interface/all_interface";
 import { errorHandling } from "../error/errorhandling";
-import { upload_project_img } from '../img/upload'
+import { upload_project_img, deleteImg } from '../img/upload'
 
 
 
@@ -44,8 +44,8 @@ export const delete_project = async (req: Request, res: Response): Promise<void>
 
     if (typeof isDeleted === "string") {
       try { isDeleted = JSON.parse(isDeleted) }
-      catch { res.status(400).send({ status: false, message: 'Invalid type isDeleted' }); return } 
-    } 
+      catch { res.status(400).send({ status: false, message: 'Invalid type isDeleted' }); return }
+    }
 
     const project = await Portfolio.findById(product_id);
     if (!project) { res.status(404).send({ status: "fail", message: "Project not found." }); return; }
@@ -84,7 +84,28 @@ export const update_project = async (req: Request, res: Response): Promise<void>
   }
 };
 
-// get api  // filter delete product , active product
-// delete project
-// update img only
-// update data but not updated img
+export const update_project_img = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const file = req.file;
+    const { product_id } = req.query
+
+
+    if (!product_id) { res.status(400).send({ status: false, message: "Product id is required." }); return }
+    if (!file) { res.status(400).send({ status: false, message: "Image is required." }); return }
+
+    const project = await Portfolio.findById(product_id);
+
+    if (!project) { res.status(404).send({ status: false, message: "Project not found." }); return; }
+
+    if (project?.profilePhoto?.public_id) {
+      await deleteImg(project?.profilePhoto?.public_id)
+    }
+
+    const imgUrl = await upload_project_img(file.path)
+    const update_img = await Portfolio.findByIdAndUpdate(product_id, { $set: { profilePhoto: imgUrl } }, { new: true })
+    res.status(200).send({ status: "success", message: "Project image updated successfully.", data: update_img }); return
+
+  }
+  catch (error: any) { errorHandling(error, res); }
+}
+
