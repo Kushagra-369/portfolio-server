@@ -11,7 +11,12 @@ const user_Schema = new Schema<IUser>(
         email: { type: String, required: true, unique: true },
         password: { type: String, required: true, },
         role: { type: String, required: true, enum: ["admin", "user"], default: "user" },
-
+        admin: {
+            isAccountActive: { type: Boolean, default: true },
+            AdminOTP: { type: String, default: "0" },
+            isOtpVerified: { type: String, default: "0" }, // Or change to Boolean if preferred
+            expireOTP: { type: Date, default: null } // ✅ ADD THIS
+        }
     },
     { timestamps: true }
 );
