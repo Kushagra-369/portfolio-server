@@ -14,7 +14,7 @@ const user_Schema = new Schema<IUser>(
         admin: {
             isAccountActive: { type: Boolean, default: true },
             AdminOTP: { type: String, default: "0" },
-            isOtpVerified: { type: String, default: "0" }, // Or change to Boolean if preferred
+            isOtpVerified: { type: String, default: false }, // Or change to Boolean if preferred
             expireOTP: { type: Date, default: null } // ✅ ADD THIS
         }
     },
