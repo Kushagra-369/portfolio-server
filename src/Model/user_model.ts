@@ -11,6 +11,7 @@ const user_Schema = new Schema<IUser>(
         email: { type: String, required: true, unique: true },
         password: { type: String, required: true, },
         role: { type: String, required: true, enum: ["admin", "user"], default: "user" },
+        socialLinks: [{ type: Object, required: true }],
         admin: {
             isAccountActive: { type: Boolean, default: true },
             AdminOTP: { type: String, default: "0" },
