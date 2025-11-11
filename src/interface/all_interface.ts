@@ -36,3 +36,11 @@ export interface IUser extends Document {
     expireOTP: Date | null;       // ✅ allows null until OTP generated
   };
 }
+
+export interface IMessage extends Document {
+  name: string;
+  email: string;
+  phoneNumber : number;
+  message: string;
+  isDeleted: boolean;
+}
