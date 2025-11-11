@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import Portfolio from "../Model/portfolio_model";
+import Portfolio from "../Model/portfolio/portfolio_model";
 import { IPortfolio } from "../interface/all_interface";
 import { errorHandling } from "../error/errorhandling";
 import { upload_project_img, deleteImg } from '../img/upload'
