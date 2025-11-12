@@ -40,11 +40,24 @@ export interface IUser extends Document {
 export interface IMessage extends Document {
   name: string;
   email: string;
-  phoneNumber : number;
+  phoneNumber: number;
   message: string;
   isDeleted: boolean;
 }
 
 export interface IReview extends Document {
-  rating : number;
+  rating: number;
 }
+
+export interface IAdmin extends Document {
+  name: string;
+  isDeleted: boolean;
+  resume: {
+    public_id: string;     // if you upload to cloud (like Cloudinary)
+    secure_url: string;    // link to access the uploaded PDF
+    format: "pdf";         // ensures it’s always a PDF
+  };
+  socialLinks: { name: string; link: string }[];
+  profileImg: { public_id: string; secure_url: string };
+}
+

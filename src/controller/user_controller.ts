@@ -1,10 +1,12 @@
 import { Request, Response } from "express";
 import Portfolio from "../Model/user_model";
+import Admin from "../Model/admin_model";
 import { IUser } from "../interface/all_interface";
 import { errorHandling } from "../error/errorhandling";
 import { otpVerificationAdmin } from "../mailer/user_mail";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { v2 as cloudinary } from "cloudinary";
 
 
 export const create_admin = async (req: Request, res: Response): Promise<void> => {
@@ -83,7 +85,6 @@ export const create_admin = async (req: Request, res: Response): Promise<void> =
   }
 };
 
-
 export const verify_admin_otp = async (req: Request, res: Response): Promise<void> => {
   try {
     const { otp } = req.body;
@@ -142,4 +143,85 @@ export const verify_admin_otp = async (req: Request, res: Response): Promise<voi
   }
 };
 
+export const create_new_profile = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { name, linkedin, github } = req.body;
 
+    if (!name) {
+      res.status(400).json({ success: false, message: "Name is required." });
+      return;
+    }
+
+    if (!req.files || !(req.files as any).profileImg || !(req.files as any).resume) {
+      res.status(400).json({ success: false, message: "Profile image and resume are required." });
+      return;
+    }
+
+    // 🧠 Extract files
+    const profileImgFile = (req.files as any).profileImg[0];
+    const resumeFile = (req.files as any).resume[0];
+
+    // ✅ Upload profile image to Cloudinary
+    const uploadedProfileImg = await cloudinary.uploader.upload(profileImgFile.path, {
+      folder: "admin/profile",
+      resource_type: "image",
+    });
+
+    // ✅ Upload resume (PDF) to Cloudinary
+    const uploadedResume = await cloudinary.uploader.upload(resumeFile.path, {
+      folder: "admin/resume",
+      resource_type: "raw", // raw for PDFs
+      format: "pdf",
+    });
+
+    // ✅ Create admin record
+    const admin = await Admin.create({
+      name,
+      isDeleted: false,
+      resume: {
+        public_id: uploadedResume.public_id,
+        secure_url: uploadedResume.secure_url,
+        format: "pdf",
+      },
+      socialLinks: [
+        { name: "LinkedIn", link: linkedin },
+        { name: "GitHub", link: github },
+      ],
+      profileImg: {
+        public_id: uploadedProfileImg.public_id,
+        secure_url: uploadedProfileImg.secure_url,
+      },
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Admin profile created successfully.",
+      admin,
+    });
+  } catch (error: any) {
+    console.error("Error creating profile:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server Error. Could not create profile.",
+      error: error.message,
+    });
+  }
+};
+
+export const get_new_profile = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const adminProfiles = await Admin.find({ isDeleted: false });
+    res.status(200).json({
+      success: true,
+      message: "Admin profiles retrieved successfully.",
+      adminProfiles,
+    });
+  } catch (error: any) {
+    console.error("Error retrieving profiles:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server Error. Could not retrieve profiles.",
+      error: error.message,
+    });
+  }
+};

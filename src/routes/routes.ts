@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import multer = require("multer")
 import { create_project, get_all_project, delete_project, update_project, update_project_img } from '../controller/portfolio_controller'
-import { create_admin ,verify_admin_otp} from '../controller/user_controller'
+import { create_admin ,verify_admin_otp , create_new_profile , get_new_profile} from '../controller/user_controller'
 import { create_message , get_all_messages,delete_message , send_rating ,get_ratings } from '../controller/message_controller'
 const router = Router()
  
@@ -19,5 +19,7 @@ router.get('/get_all_messages', get_all_messages)
 router.delete('/delete_message/:id', delete_message)
 router.post('/send_rating', send_rating)
 router.get('/get_ratings', get_ratings)
+router.post('/create_new_profile', upload.fields([{ name: 'profileImg', maxCount: 1 }, { name: 'resume', maxCount: 1 }]), create_new_profile);
+router.get('/get_new_profile', get_new_profile);
 
 export default router
