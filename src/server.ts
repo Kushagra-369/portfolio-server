@@ -9,7 +9,7 @@ const app = express();
 app.use(express.json());
 app.use(cors()); // ✅ use cors middleware
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 1080;
 const mongoURL = process.env.MongoDBURL;
 
 if (!mongoURL) {

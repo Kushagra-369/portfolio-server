@@ -44,3 +44,7 @@ export interface IMessage extends Document {
   message: string;
   isDeleted: boolean;
 }
+
+export interface IReview extends Document {
+  rating : number;
+}

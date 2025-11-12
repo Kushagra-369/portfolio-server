@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import Message from "../Model/message_model";
-import { IMessage } from "../interface/all_interface";
+import { IMessage , IReview } from "../interface/all_interface";
 import { errorHandling } from "../error/errorhandling";
+import Review from "../Model/review_model"; // your mongoose model
 
 export const create_message = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -46,3 +47,55 @@ export const delete_message = async (req: Request, res: Response): Promise<void>
     errorHandling(error, res);
   }
 };
+
+export const send_rating = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { rating }: { rating?: number } = req.body;
+
+    // Validate rating
+    if (rating === undefined || rating === null) {
+      res.status(400).json({ error: "Rating is required." });
+      return;
+    }
+
+    if (typeof rating !== "number" || rating < 1 || rating > 5) {
+      res.status(400).json({ error: "Rating must be a number between 1 and 5." });
+      return;
+    }
+
+    // Create and save review
+    const newReview = new Review({ rating });
+
+    await newReview.save();
+
+    res.status(201).json({
+      success: true,
+      message: "Rating submitted successfully.",
+      data: newReview,
+    });
+  } catch (error) {
+    errorHandling(error, res);
+  }
+};
+
+export const get_ratings = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const reviews = await Review.find();
+
+    const totalRatings = reviews.length;
+    const averageRating =
+      totalRatings > 0
+        ? reviews.reduce((sum, r) => sum + (r.rating || 0), 0) / totalRatings
+        : 0;
+
+    res.status(200).json({
+      success: true,
+      totalRatings,
+      averageRating: parseFloat(averageRating.toFixed(1)),
+      reviews,
+    });
+  } catch (error) {
+    errorHandling(error, res);
+  }
+};
+
