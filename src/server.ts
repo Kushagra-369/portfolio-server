@@ -20,10 +20,6 @@ mongoose.connect(mongoURL)
   .then(() => console.log("✅ Connected to MongoDB"))
   .catch((error) => console.error("❌ MongoDB connection failed:", error.message));
 
-app.get("/", (req, res) => {
-  res.send("Portfolio Server is Running 🚀");
-});
-
 app.use("/", router);
 
 app.listen(PORT, () => console.log(`🌐 Server is running on port ${PORT}`));
