@@ -3,11 +3,14 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import router from "./routes/routes";
 import cors from "cors"; // ✅ import cors
+import { apiLimiter } from "./middleware/rateLimiter";
 
 dotenv.config();
 const app = express();
 app.use(express.json());
 app.use(cors()); // ✅ use cors middleware
+
+app.use(apiLimiter);
 
 const PORT = process.env.PORT || 1080;
 const mongoURL = process.env.MongoDBURL;
